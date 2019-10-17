@@ -26,6 +26,25 @@ public class ConsumeStrategyBuilder {
 
     //初始化转发map
     static {
+        initDispatchMap();
+
+    }
+
+    /**
+     * 转发消费消息
+     * @param mqTypeEnum
+     * @param msg
+     * @return
+     */
+    public String consume(MqTypeEnum mqTypeEnum, String msg) {
+        ConsumeStrategy consumeStrategy = map.get(mqTypeEnum);
+        return consumeStrategy.consume(msg);
+    }
+
+    /**
+     * 解析所有策略实现类，装载进入map中
+     */
+    private static void initDispatchMap() {
         List<String> list = PackageUtil.resolveAllClass(ConsumeStrategyBuilder.class.getPackage().getName() + ".impl");
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -47,18 +66,6 @@ public class ConsumeStrategyBuilder {
 
             }
         }
-
-    }
-
-    /**
-     * 转发消费消息
-     * @param mqTypeEnum
-     * @param msg
-     * @return
-     */
-    public String consume(MqTypeEnum mqTypeEnum, String msg) {
-        ConsumeStrategy consumeStrategy = map.get(mqTypeEnum);
-        return consumeStrategy.consume(msg);
     }
 
 }
